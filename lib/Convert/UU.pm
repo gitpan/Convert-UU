@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.20';
+$VERSION = '0.30';
 
 #
 #  From comp.lang.perl 3/1/95.

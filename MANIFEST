@@ -3,6 +3,6 @@ MANIFEST
 Makefile.PL
 README
 lib/Convert/UU.pm
-puudecode.PL
-puuencode.PL
+puudecode
+puuencode
 t/uu.t

@@ -1,18 +1,16 @@
-use Config;
+#!/usr/bin/perl
 
-open F, ">puuencode";
-print F <<END;
-$Config{startperl}
-END
-print F <<'END';
+use strict;
 use Convert::UU 'uuencode';
 my($file,$as_file) = @ARGV;
 $as_file ||= $file;
 my $stat = (stat $file)[2] or die "Couln't stat $file: $!";
 my($mode) = sprintf "%04o", $stat & 07777;
 open F, $file or die "Couldn't open $file: $!";
+binmode(F);
 print uuencode(\*F,$as_file,$mode);
 close F;
+
 __END__
 
 =head1 NAME
@@ -44,4 +42,3 @@ puudecode(1), Convert::UU(3)
 Andreas Koenig E<lt>andreas.koenig@mind.deE<gt>
 
 =cut
-END

@@ -1,19 +1,16 @@
-use Config;
+#!/usr/local/perl5.002_01/bin/perl
 
-open F, ">puudecode";
-print F <<END;
-$Config{startperl}
-END
-
-print F <<'END';
+use strict;
 use Convert::UU 'uudecode';
 die "Usage: $0 file\n" unless @ARGV==1;
 open F, $ARGV[0] or die "Couldn't open $ARGV[0]: $!";
 my($uudecoded_string,$file,$mode) = uudecode(\*F);
 open F, ">$file" or die "Can't open >$file: $!";
+binmode(F);
 print F $uudecoded_string;
 close F;
 chmod oct($mode), $file;
+
 __END__
 
 =head1 NAME
@@ -42,8 +39,6 @@ puuencode(1), Convert::UU(3)
 
 =head1 AUTHOR
 
-Andreas Koenig E<lt>andreas.koenig@mind.deE<gt>
+Andreas Koenig E<lt>andreas.koenig@anima.deE<gt>
 
 =cut
-END
-

@@ -1,5 +1,14 @@
 =head1 Revision history for Perl module Convert::UU.
 
+=head2 0.30  Mar 10, 1999
+
+Harald Joerg C<E<lt>Harald.Joerg@mch.sni.de$<gt>> sent me a patch to
+add binmode to the filehandles that are used, so the whole thing works on
+Windows.
+
+Modernized the Makefile.PL to use fixin() instead of writing the
+EXE_FILES "by hand".
+
 =head2 0.20  Feb 7, 1997
 
 Further investigation of the warning I "fixed" yesterday. Added tests
