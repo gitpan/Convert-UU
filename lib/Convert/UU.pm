@@ -1,7 +1,6 @@
 package Convert::UU;
 
 use strict;
-use 5.003;
 use vars qw($VERSION @ISA @EXPORT_OK);
 use Carp 'croak';
 
@@ -14,7 +13,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.04';
+$VERSION = '0.01';
 
 
 # Preloaded methods go here.
@@ -37,10 +36,9 @@ sub uuencode {
     if (
 	ref(\$in) eq "GLOB" or 
 	ref($in) eq 'GLOB' or 
-	ref($in) eq 'FileHandle' or
-	ref($in) eq 'IO::Handle'
+	ref($in) eq 'FileHandle'
        ) {
-	local $^W = 0; # Why did I get use of undefined value here ?
+	local $^W = 0; # Why did I get use of undefiend value here ???
 	while (defined($r = read($in,$chunk,45)) && $r > 0) {
 	    $result .= uuencode_chunk($chunk);
 	}
@@ -68,19 +66,13 @@ sub uuencode_chunk {
 }
 
 sub uudecode {
-    croak("Usage: uudecode( {string|filehandle|array ref}) ")
+    croak("Usage: uudecode( {string|filehandle}) ")
       unless(@_ == 1);
     my($in) = @_;
 
     my($result,$file,$mode);
     $result = $mode = $file = "";
-    if (
-	ref(\$in) eq "GLOB" or
-	ref($in) eq 'GLOB'
-	or ref($in) eq 'FileHandle'
-	or ref($in) eq 'IO::Handle'
-       ) {
-	local($\) = "\n";
+    if (ref(\$in) eq "GLOB" or ref($in) eq 'GLOB' or ref($in) eq 'FileHandle') {
 	while (<$in>) {
 	    if ($file eq "" and !$mode){
 		($mode,$file) = /^begin\s+(\d+)\s+(\S+)/ ;
@@ -92,17 +84,6 @@ sub uudecode {
     } elsif (ref(\$in) eq "SCALAR") {
 	while ($in =~ s/(.*?\n)//s) {
 	    my $line = $1;
-	    if ($file eq "" and !$mode){
-		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
-		next;
-	    }
-	    next if $file eq "" and !$mode;
-	    last if $line =~ /^end/;
-	    $result .= uudecode_chunk($line);
-	}
-    } elsif (ref($in) eq "ARRAY") {
-	my $line;
-	foreach $line (@$in) {
 	    if ($file eq "" and !$mode){
 		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
 		next;
@@ -127,8 +108,11 @@ sub uudecode_chunk {
     return unpack("u", $string);
 }
 
+# Autoload methods go after =cut, and are processed by the autosplit program.
+
 1;
 __END__
+# Below is the stub of documentation for your module. You better edit it!
 
 =head1 NAME
 
@@ -143,20 +127,18 @@ Convert::UU, uuencode, uudecode - Perl module for uuencode and uudecode
 
 =head1 DESCRIPTION
 
-uuencode() takes as the first argument a string that is to be
-uuencoded. Note, that it is the string that is encoded, not a
-filename. Alternatively a filehandle may be passed that must be opened
-for reading. It returns the uuencoded string including C<begin> and
-C<end>. Second and third argument are optional and specify filename and
+uuencode() takes as the first argument a scalar that is to be
+uuencoded. Alternatively a filehandle may be passed that must be
+opened for reading. It returns the uuencoded string including begin
+and end. Second and third argument are optional and specify filename and
 mode. If unspecified these default to "uuencode.uu" and 644.
 
 uudecode() takes a string as argument which will be uudecoded. If the
-argument is a filehandle this handle will be read instead. If it is a
-reference to an ARRAY, the elements are treated like lines that form a
-string. Leading and trailing garbage will be ignored. The function
-returns the uudecoded string for the first begin/end pair. In array
-context it returns an array whose first element is the uudecoded
-string, the second is the filename and the third is the mode.
+argument is a filehandle this will be read instead. Leading and
+trailing garbage will be ignored. The function returns the uudecoded
+string for the first begin/end pair. In array context it returns an
+array whose first element is the uudecoded string, the second is the
+filename and the third is the mode.
 
 =head1 EXPORT
 

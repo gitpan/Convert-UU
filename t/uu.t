@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN {print "1..5\n";}
+BEGIN {print "1..4\n";}
 END {print "not ok 1\n" unless $loaded;}
 use Convert::UU;
 $loaded = 1;
@@ -21,7 +21,7 @@ print "ok 1\n";
 
 use Convert::UU 'uuencode';
 if (($foo=uuencode("foo\n","foo","644")) eq 'begin 644 foo
-$9F]O"@``
+$9F]O"@"`
 end
 '){
     print "ok 2\n";
@@ -42,14 +42,4 @@ if ($bar = uudecode(uuencode(*F)) and $bar eq $foo) {
     print "ok 4\n";
 } else {
     print "not ok 4: foo [$foo] bar [$bar]\n";
-}
-
-$foo = [ "begin 644 foo\n",
-         '$9F]O"@``' . "\n",
-         "end\n" ];
-
-if (($bar=uudecode($foo)) eq "foo\n") {
-    print "ok 5\n";
-} else {
-    print "not ok 5: foo [foo\n] bar [$bar]\n";
 }

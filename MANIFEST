@@ -1,8 +1,7 @@
+lib/Convert/UU.pm
 Changes
 MANIFEST
 Makefile.PL
-README
-lib/Convert/UU.pm
-puudecode.PL
 puuencode.PL
+puudecode.PL
 t/uu.t
