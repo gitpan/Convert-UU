@@ -7,7 +7,15 @@ WriteMakefile(
     'NAME'	=> 'Convert::UU',
     'VERSION_FROM' => $mainfile,
     'EXE_FILES' => [qw(puudecode puuencode)],
-    dist => { 
-	     PREOP => "co -l README && pod2text $mainfile > README && ci -u README",
-	    },
+    'dist' => {
+	       DIST_DEFAULT => 'README all tardist',
+	       COMPRESS => 'gzip -9f'
+	      },
 );
+
+sub MY::postamble {
+  q{README: lib/Convert/UU.pm Makefile
+	chmod +w $@
+	pod2text lib/Convert/UU.pm > $@
+}
+}

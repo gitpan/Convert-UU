@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.40';
+$VERSION = '0.52';
 
 #
 #  From comp.lang.perl 3/1/95.
@@ -38,15 +38,14 @@ sub uuencode {
        ) {
         # local $^W = 0; # Why did I get use of undefined value here ?
 	binmode($in);
-	while (defined($r = read($in,$chunk,45)) && $r > 0) {
-	    push @result, uuencode_chunk($chunk);
-	}
-    } elsif (ref(\$in) eq "SCALAR") {
-        pos($in)=0;
-	while ($in =~ m/\G(.{1,45})/sgc) {
-	    push @result, uuencode_chunk($1);
-	}
+        local $/;
+        $in = <$in>;
     }
+    pos($in)=0;
+    while ($in =~ m/\G(.{1,45})/sgc) {
+      push @result, uuencode_chunk($1);
+    }
+    push @result, "`\n";
     join "", "begin $mode $file\n", @result, "end\n";
 }
 
@@ -81,7 +80,7 @@ sub uudecode {
 	binmode($in);
 	while (<$in>) {
 	    if ($file eq "" and !$mode){
-		($mode,$file) = ($1, $2) if /^begin\s+(\d+)\s+(\S+)/ ;
+		($mode,$file) = ($1, $2) if /^begin\s+(\d+)\s+(.+)$/ ;
 		next;
 	    }
 	    last if /^end/;
@@ -91,7 +90,7 @@ sub uudecode {
 	while ($in =~ m/\G(.*?(\n|\r|\r\n|\n\r))/gc) {
 	    my $line = $1;
 	    if ($file eq "" and !$mode){
-		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
+		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(.+)$/ ;
 		next;
 	    }
 	    next if $file eq "" and !$mode;
@@ -102,7 +101,7 @@ sub uudecode {
 	my $line;
 	foreach $line (@$in) {
 	    if ($file eq "" and !$mode){
-		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
+		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(.+)$/ ;
 		next;
 	    }
 	    next if $file eq "" and !$mode;
@@ -167,10 +166,8 @@ Both uudecode and uuencode are in @EXPORT_OK.
 
 =head1 AUTHOR
 
-Andreas Koenig E<lt>andreas.koenig@mind.deE<gt>. With code integrated
-that was posted to USENET from Hans Mulder
-E<lt>hansm@wsinti05.win.tue.nlE<gt> and Randal L. Schwartz
-E<lt>merlyn@teleport.comE<gt>.
+Andreas Koenig E<lt>andreas.koenig@anima.deE<gt>. With code integrated
+that was posted to USENET from Hans Mulder and Randal L. Schwartz.
 
 =head1 SEE ALSO
 

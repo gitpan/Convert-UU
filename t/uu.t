@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -- -*- mode: cperl -*-
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
@@ -23,6 +23,23 @@ print "ok 1\n";
 # (correspondingly "not ok 13") depending on the success of chunk 13
 # of the test code):
 
+sub bytometer ( $ ) {
+    my($byte) = @_;
+    my($result,$i) = "";
+    for ($i=5;$i<=$byte;$i+=5) {
+	if ( $i==5 || substr($i,-2) eq "05" && $i<10000 ) {
+	    $result .=  join "", "\n", "." x (4-length($i)), $i;
+	} elsif ( $i<=10000 ) {
+	    $result .=  join "", "." x (5-length($i)), $i;
+	} elsif ( substr($i,-2) eq "10" ) {
+	    $result .=  join "", "\n", "." x (9-length($i)), $i;
+	} elsif ( substr($i,-1) eq "0" ) {
+	    $result .=  join "", "." x (10-length($i)), $i;
+	}
+    }
+    $result .= "." x ($byte%5);
+    $result;
+}
 
 use Convert::UU 'uuencode';
 
@@ -85,20 +102,3 @@ end
 });
 print $back2 eq $back ?  "ok 7\n" : "#back[$back]back2[$back2]\nnot ok 7\n";
 
-sub bytometer ( $ ) {
-    my($byte) = @_;
-    my($result,$i) = "";
-    for ($i=5;$i<=$byte;$i+=5) {
-	if ( $i==5 || substr($i,-2) eq "05" && $i<10000 ) {
-	    $result .=  join "", "\n", "." x (4-length($i)), $i;
-	} elsif ( $i<=10000 ) {
-	    $result .=  join "", "." x (5-length($i)), $i;
-	} elsif ( substr($i,-2) eq "10" ) {
-	    $result .=  join "", "\n", "." x (9-length($i)), $i;
-	} elsif ( substr($i,-1) eq "0" ) {
-	    $result .=  join "", "." x (10-length($i)), $i;
-	}
-    }
-    $result .= "." x ($byte%5);
-    $result;
-}
