@@ -1,5 +1,12 @@
 =head1 Revision history for Perl module Convert::UU.
 
+=head2 0.10  Feb 6, 1997
+
+Thanks to Kurtis D. Rader <krader@sequent.com> who describes that a
+uuencoded chunk that consists of nothing but backtick triggers a "Use
+of uninitialized variable" warning. Although I'd like to see it as a
+bug in perl this version takes precautions to avoid the warning.
+
 =head2 0.05  Nov 25, 1997
 
 Updated to perl5.004 using m//gc instead of s///.

@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.05';
+$VERSION = '0.10';
 
 #
 #  From comp.lang.perl 3/1/95.
@@ -107,7 +107,7 @@ sub uudecode {
 	    }
 	    next if $file eq "" and !$mode;
 	    last if $line =~ /^end/;
-	    push @result, uudecode_chunk($line);
+	    push @result, uudecode_chunk($line) || "";
 	}
     }
     wantarray ? (join("",@result),$file,$mode) : join("",@result);
