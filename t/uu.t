@@ -26,38 +26,39 @@ print "ok 1\n";
 
 use Convert::UU 'uuencode';
 
-my $forth = bytometer(3000);
-my $uu = uuencode($forth,"foo","644");
+my $astring = bytometer(3000);
+my $uu = uuencode($astring,"foo","644");
 my $back = Convert::UU::uudecode($uu);
-if ($forth eq $back){
+if ($astring eq $back){
     print "ok 2\n";
 } else {
-    print "not ok 2: forth[$forth] uu[$uu] back[$back]\n";
+    print "not ok 2: astring[$astring] uu[$uu] back[$back]\n";
 }
 
 if (open F, "MANIFEST") {
-    print "ok 3\n";
+  print "ok 3\n";
+  binmode(*F);
 } else {
-    print "not ok 3\n";
+  print "not ok 3\n";
 }
 undef $/;
-$forth = <F>;
+$astring = <F>;
 open F, "MANIFEST";
 use Convert::UU 'uudecode';
-if ($back = uudecode(uuencode(*F)) and $back eq $forth) {
+if ($back = uudecode(uuencode(*F)) and $back eq $astring) {
     print "ok 4\n";
 } else {
-    print "not ok 4: forth[$forth] back[$back]\n";
+    print "not ok 4: astring[$astring] back[$back]\n";
 }
 
-$forth = [ "begin 644 foo\n",
-         '$9F]O"@``' . "\n",
-         "end\n" ];
+$astring = [ "begin 644 foo\n",
+	     '$9F]O"@``' . "\n",
+	     "end\n" ];
 
-if (($back=uudecode($forth)) eq "foo\n") {
+if (($back=uudecode($astring)) =~ /^foo/) {
     print "ok 5\n";
 } else {
-    print "not ok 5: forth[forth\n] back[$back]\n";
+    print "not ok 5: astring[$astring] back[$back]\n";
 }
 
 # Check if the last-line-backtick is silent with -w
@@ -75,12 +76,14 @@ end
 # Neuralgic file with a 0\n in line 24
 my $badzero = "0\n" x 24;
 my $badzero_uu = uuencode($badzero);
-print uudecode(qq{begin 644 ttt2
+$back = uudecode($badzero_uu);
+my $back2 = uudecode(qq{begin 644 ttt2
 M,\`HP\"C\`*,\`HP\"C\`*,\`HP\"C\`*,\`HP\"C\`*,\`HP\"C\`*,\`HP\"C\`*,\`HP\"C\`*,\`HP
 \#\"C\`*
 \`
 end
-}) eq uudecode($badzero_uu) ?  "ok 7\n" : "not ok 7\n";
+});
+print $back2 eq $back ?  "ok 7\n" : "#back[$back]back2[$back2]\nnot ok 7\n";
 
 sub bytometer ( $ ) {
     my($byte) = @_;

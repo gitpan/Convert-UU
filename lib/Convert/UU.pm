@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.30';
+$VERSION = '0.40';
 
 #
 #  From comp.lang.perl 3/1/95.
@@ -32,8 +32,8 @@ sub uuencode {
     my($chunk,@result,$r);
     if (
 	ref($in) eq 'IO::Handle' or
-	ref(\$in) eq "GLOB" or 
-	ref($in) eq "GLOB" or 
+	ref(\$in) eq "GLOB" or
+	ref($in) eq "GLOB" or
 	ref($in) eq 'FileHandle'
        ) {
         # local $^W = 0; # Why did I get use of undefined value here ?
@@ -88,7 +88,7 @@ sub uudecode {
 	    push @result, uudecode_chunk($_);
 	}
     } elsif (ref(\$in) eq "SCALAR") {
-	while ($in =~ m/\G(.*?\n)/gc) {
+	while ($in =~ m/\G(.*?(\n|\r|\r\n|\n\r))/gc) {
 	    my $line = $1;
 	    if ($file eq "" and !$mode){
 		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
