@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.02';
+$VERSION = '0.04';
 
 
 # Preloaded methods go here.
@@ -68,7 +68,7 @@ sub uuencode_chunk {
 }
 
 sub uudecode {
-    croak("Usage: uudecode( {string|filehandle}) ")
+    croak("Usage: uudecode( {string|filehandle|array ref}) ")
       unless(@_ == 1);
     my($in) = @_;
 
@@ -92,6 +92,17 @@ sub uudecode {
     } elsif (ref(\$in) eq "SCALAR") {
 	while ($in =~ s/(.*?\n)//s) {
 	    my $line = $1;
+	    if ($file eq "" and !$mode){
+		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
+		next;
+	    }
+	    next if $file eq "" and !$mode;
+	    last if $line =~ /^end/;
+	    $result .= uudecode_chunk($line);
+	}
+    } elsif (ref($in) eq "ARRAY") {
+	my $line;
+	foreach $line (@$in) {
 	    if ($file eq "" and !$mode){
 		($mode,$file) = $line =~ /^begin\s+(\d+)\s+(\S+)/ ;
 		next;
@@ -140,11 +151,12 @@ C<end>. Second and third argument are optional and specify filename and
 mode. If unspecified these default to "uuencode.uu" and 644.
 
 uudecode() takes a string as argument which will be uudecoded. If the
-argument is a filehandle this handle will be read instead. Leading and
-trailing garbage will be ignored. The function returns the uudecoded
-string for the first begin/end pair. In array context it returns an
-array whose first element is the uudecoded string, the second is the
-filename and the third is the mode.
+argument is a filehandle this handle will be read instead. If it is a
+reference to an ARRAY, the elements are treated like lines that form a
+string. Leading and trailing garbage will be ignored. The function
+returns the uudecoded string for the first begin/end pair. In array
+context it returns an array whose first element is the uudecoded
+string, the second is the filename and the third is the mode.
 
 =head1 EXPORT
 
