@@ -6,11 +6,15 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN {print "1..4\n";}
+use strict;
+use vars qw($loaded);
+
+BEGIN {print "1..5\n";}
 END {print "not ok 1\n" unless $loaded;}
 use Convert::UU;
 $loaded = 1;
 print "ok 1\n";
+$^W = 1;
 
 ######################### End of black magic.
 
@@ -20,13 +24,14 @@ print "ok 1\n";
 
 
 use Convert::UU 'uuencode';
-if (($foo=uuencode("foo\n","foo","644")) eq 'begin 644 foo
-$9F]O"@"`
-end
-'){
+
+my $forth = bytometer(3000);
+my $uu = uuencode($forth,"foo","644");
+my $back = Convert::UU::uudecode($uu);
+if ($forth eq $back){
     print "ok 2\n";
 } else {
-    print "not ok 2: >$foo<\n";
+    print "not ok 2: forth[$forth] uu[$uu] back[$back]\n";
 }
 
 if (open F, "MANIFEST") {
@@ -35,11 +40,39 @@ if (open F, "MANIFEST") {
     print "not ok 3\n";
 }
 undef $/;
-$foo = <F>;
+$forth = <F>;
 open F, "MANIFEST";
 use Convert::UU 'uudecode';
-if ($bar = uudecode(uuencode(*F)) and $bar eq $foo) {
+if ($back = uudecode(uuencode(*F)) and $back eq $forth) {
     print "ok 4\n";
 } else {
-    print "not ok 4: foo [$foo] bar [$bar]\n";
+    print "not ok 4: forth[$forth] back[$back]\n";
+}
+
+$forth = [ "begin 644 foo\n",
+         '$9F]O"@``' . "\n",
+         "end\n" ];
+
+if (($back=uudecode($forth)) eq "foo\n") {
+    print "ok 5\n";
+} else {
+    print "not ok 5: forth[forth\n] back[$back]\n";
+}
+
+sub bytometer ( $ ) {
+    my($byte) = @_;
+    my($result,$i) = "";
+    for ($i=5;$i<=$byte;$i+=5) {
+	if ( $i==5 || substr($i,-2) eq "05" && $i<10000 ) {
+	    $result .=  join "", "\n", "." x (4-length($i)), $i;
+	} elsif ( $i<=10000 ) {
+	    $result .=  join "", "." x (5-length($i)), $i;
+	} elsif ( substr($i,-2) eq "10" ) {
+	    $result .=  join "", "\n", "." x (9-length($i)), $i;
+	} elsif ( substr($i,-1) eq "0" ) {
+	    $result .=  join "", "." x (10-length($i)), $i;
+	}
+    }
+    $result .= "." x ($byte%5);
+    $result;
 }

@@ -1,0 +1,45 @@
+Convert::UU
+
+This program is Copyright (c) 1996 Andreas Koenig.
+
+This program is free software; you can use, distribute and/or
+modify it under the same terms as Perl itself.
+
+
+DESCRIPTION
+-----------
+
+This module provides the two functions uudecode and uuencode for easy
+uu{de,en}coding within memory.
+
+
+WARNING
+-------
+
+This release is considered alpha code. Handle with the appropriate care.
+
+
+BUILDING THE MODULE
+-------------------
+
+    perl Makefile.PL
+    make
+    make test
+
+
+INSTALLATION
+------------
+
+    make install
+
+
+PORTABILITY
+-----------
+
+This module has not ben tested on other platforms than UNIX. Please
+let me know, if there are some fixes necessary for other
+systems. Thank you.
+
+
+Enjoy,
+andreas koenig <andreas.koenig@mind.de>
