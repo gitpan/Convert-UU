@@ -1,5 +1,13 @@
 =head1 Revision history for Perl module Convert::UU.
 
+=head2 0.20  Feb 7, 1997
+
+Further investigation of the warning I "fixed" yesterday. Added tests
+for a trailing empty string in the last line of the uuencoded string
+and for a zero in the last line of the uudecoded string. Found the bug
+in the code that skipped lines starting with a "#". Allowing such
+lines fixed a long standing bug.
+
 =head2 0.10  Feb 6, 1997
 
 Thanks to Kurtis D. Rader <krader@sequent.com> who describes that a

@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.10';
+$VERSION = '0.20';
 
 #
 #  From comp.lang.perl 3/1/95.
@@ -81,7 +81,7 @@ sub uudecode {
 	binmode($in);
 	while (<$in>) {
 	    if ($file eq "" and !$mode){
-		($mode,$file) = /^begin\s+(\d+)\s+(\S+)/ ;
+		($mode,$file) = ($1, $2) if /^begin\s+(\d+)\s+(\S+)/ ;
 		next;
 	    }
 	    last if /^end/;
@@ -107,7 +107,7 @@ sub uudecode {
 	    }
 	    next if $file eq "" and !$mode;
 	    last if $line =~ /^end/;
-	    push @result, uudecode_chunk($line) || "";
+	    push @result, uudecode_chunk($line);
 	}
     }
     wantarray ? (join("",@result),$file,$mode) : join("",@result);
@@ -115,13 +115,18 @@ sub uudecode {
 
 sub uudecode_chunk {
     my($chunk) = @_;
-    return "" if $chunk =~ /^(--|\#|CREATED)/;
+#    return "" if $chunk =~ /^(--|\#|CREATED)/; # the "#" was an evil
+                                                # bug: a "#" in column
+                                                # one is legal!
+    return "" if $chunk =~ /^(?:--|CREATED)/;
     my $string = substr($chunk,0,int((((ord($chunk) - 32) & 077) + 2) / 3)*4+1);
 #    warn "DEBUG: string [$string]";
 #    my $return = unpack("u", $string);
 #    warn "DEBUG: return [$return]";
 #    $return;
-    unpack("u", $string);
+
+    my $ret = unpack("u", $string);
+    defined $ret ? $ret : "";
 }
 
 1;
