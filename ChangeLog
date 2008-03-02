@@ -1,3 +1,12 @@
+2008-03-02  Andreas J. Koenig  <andreas.koenig.7os6VVqR@franz.ak.mind.de>
+
+	* release 0.5201
+
+	* add a License
+
+	* address RT#4926: followed a suggestion by DJBURKE to use
+	UNIVERSAL::isa instead of ref() to check for IO::Handle
+
 2003-02-08  Andreas J. Koenig  <andreas.koenig@anima.de>
 
 	* lib/Convert/UU.pm: Integrated a patch sent by Silvester Erdeg to

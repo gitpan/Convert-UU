@@ -14,7 +14,7 @@ require Exporter;
 @EXPORT_OK = qw(
 	     uudecode uuencode
 );
-$VERSION = '0.52';
+$VERSION = '0.5201';
 
 #
 #  From comp.lang.perl 3/1/95.
@@ -31,7 +31,7 @@ sub uuencode {
 
     my($chunk,@result,$r);
     if (
-	ref($in) eq 'IO::Handle' or
+	UNIVERSAL::isa( $in, 'IO::Handle' ) or
 	ref(\$in) eq "GLOB" or
 	ref($in) eq "GLOB" or
 	ref($in) eq 'FileHandle'
@@ -43,13 +43,13 @@ sub uuencode {
     }
     pos($in)=0;
     while ($in =~ m/\G(.{1,45})/sgc) {
-      push @result, uuencode_chunk($1);
+      push @result, _uuencode_chunk($1);
     }
     push @result, "`\n";
     join "", "begin $mode $file\n", @result, "end\n";
 }
 
-sub uuencode_chunk {
+sub _uuencode_chunk {
     my($string) = shift;
 # for the Mac?
 #    my($mod3) = length($string) % 3;
@@ -71,7 +71,7 @@ sub uudecode {
     my(@result,$file,$mode);
     $mode = $file = "";
     if (
-	ref($in) eq 'IO::Handle' or
+	UNIVERSAL::isa( $in, 'IO::Handle' ) or
 	ref(\$in) eq "GLOB" or
 	ref($in) eq "GLOB" or
 	ref($in) eq 'FileHandle'
@@ -84,7 +84,7 @@ sub uudecode {
 		next;
 	    }
 	    last if /^end/;
-	    push @result, uudecode_chunk($_);
+	    push @result, _uudecode_chunk($_);
 	}
     } elsif (ref(\$in) eq "SCALAR") {
 	while ($in =~ m/\G(.*?(\n|\r|\r\n|\n\r))/gc) {
@@ -95,7 +95,7 @@ sub uudecode {
 	    }
 	    next if $file eq "" and !$mode;
 	    last if $line =~ /^end/;
-	    push @result, uudecode_chunk($line);
+	    push @result, _uudecode_chunk($line);
 	}
     } elsif (ref($in) eq "ARRAY") {
 	my $line;
@@ -106,13 +106,13 @@ sub uudecode {
 	    }
 	    next if $file eq "" and !$mode;
 	    last if $line =~ /^end/;
-	    push @result, uudecode_chunk($line);
+	    push @result, _uudecode_chunk($line);
 	}
     }
     wantarray ? (join("",@result),$file,$mode) : join("",@result);
 }
 
-sub uudecode_chunk {
+sub _uudecode_chunk {
     my($chunk) = @_;
 #    return "" if $chunk =~ /^(--|\#|CREATED)/; # the "#" was an evil
                                                 # bug: a "#" in column
@@ -145,12 +145,18 @@ Convert::UU, uuencode, uudecode - Perl module for uuencode and uudecode
 
 =head1 DESCRIPTION
 
+=over
+
+=item * uuencode
+
 uuencode() takes as the first argument a string that is to be
 uuencoded. Note, that it is the string that is encoded, not a
 filename. Alternatively a filehandle may be passed that must be opened
 for reading. It returns the uuencoded string including C<begin> and
 C<end>. Second and third argument are optional and specify filename and
 mode. If unspecified these default to "uuencode.uu" and 644.
+
+=item * uudecode
 
 uudecode() takes a string as argument which will be uudecoded. If the
 argument is a filehandle this handle will be read instead. If it is a
@@ -160,17 +166,29 @@ returns the uudecoded string for the first begin/end pair. In array
 context it returns an array whose first element is the uudecoded
 string, the second is the filename and the third is the mode.
 
+=back
+
 =head1 EXPORT
 
 Both uudecode and uuencode are in @EXPORT_OK.
 
 =head1 AUTHOR
 
-Andreas Koenig E<lt>andreas.koenig@anima.deE<gt>. With code integrated
+Andreas Koenig C<< ANDK@cpan.org >>. With code integrated
 that was posted to USENET from Hans Mulder and Randal L. Schwartz.
 
 =head1 SEE ALSO
 
 puuencode(1), puudecode(1) for examples of how to use this module.
+
+=head1 COPYRIGHT
+
+Copyright 1996-2003 Andreas Koenig.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+Based on code posted to comp.lang.perl by Hans Mulder and Randal L.
+Schwartz.
 
 =cut

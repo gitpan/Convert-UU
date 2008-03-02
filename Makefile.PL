@@ -4,13 +4,16 @@ use ExtUtils::MakeMaker;
 
 my $mainfile = 'lib/Convert/UU.pm';
 WriteMakefile(
-    'NAME'	=> 'Convert::UU',
-    'VERSION_FROM' => $mainfile,
-    'EXE_FILES' => [qw(puudecode puuencode)],
-    'dist' => {
-	       DIST_DEFAULT => 'README all tardist',
-	       COMPRESS => 'gzip -9f'
-	      },
+              'NAME'	=> 'Convert::UU',
+              'VERSION_FROM' => $mainfile,
+              'EXE_FILES' => [qw(puudecode puuencode)],
+              'dist' => {
+                         DIST_DEFAULT => 'README all tardist',
+                         COMPRESS => 'gzip -9f'
+                        },
+              ($ExtUtils::MakeMaker::VERSION >= 6.3002 ?
+               (LICENSE      => "perl") : (),
+              ),
 );
 
 sub MY::postamble {
